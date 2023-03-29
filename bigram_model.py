@@ -122,10 +122,12 @@ class Block(nn.Module):
         head_size = n_emb // n_head
         self.sa = MultiHeadAttention(n_head, head_size)
         self.ffwd = FeedForward(n_emb)
+        self.ln1 = nn.LayerNorm(n_emb)
+        self.ln2 = nn.LayerNorm(n_emb)
 
     def forward(self, x):
-        x = x + self.sa(x)
-        x = x + self.ffwd(x)
+        x = x + self.sa(self.ln1(x))
+        x = x + self.ffwd(self.ln2(x))
         return x
 
 
@@ -138,7 +140,7 @@ class BigramLanguageModel(nn.Module):
         self.blocks = nn.Sequential(Block(n_emb, n_head=4),
                                     Block(n_emb, n_head=4),
                                     Block(n_emb, n_head=4),
-                                    )
+                                    nn.LayerNorm(n_emb))
         # self.sa_heads = MultiHeadAttention(4, n_emb//4)  # 4heads of 8 dimensional self attention
         # self.ffwd = FeedForward(n_emb)
         self.lm_head = nn.Linear(n_emb, vocab_size)
