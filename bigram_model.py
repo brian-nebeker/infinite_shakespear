@@ -16,7 +16,7 @@ n_layer = 6
 dropout = 0.2
 
 
-torch.manual_seed(1337)
+torch.manual_seed(42)
 
 with open('tiny_shakespeare.txt', 'r', encoding='utf-8') as f:
     text = f.read()
@@ -191,12 +191,12 @@ class BigramLanguageModel(nn.Module):
             idx = torch.cat((idx, idx_next), dim=1) # (B, T+1)
         return idx
 
+
 model = BigramLanguageModel()
 m = model.to(device)
 
-
 # Create a pytorch optimizer
-optimizer = torch.optim.AdamW(m.parameters(), lr=1e-3)
+optimizer = torch.optim.AdamW(m.parameters(), lr=learning_rate)
 
 for iter in range(max_iters):
     # print loss every eval_interval
@@ -213,6 +213,9 @@ for iter in range(max_iters):
     loss.backward()  # get gradients for all parameters
     optimizer.step()  # update parameters
 
-# Generate model
+print("="*20, "FINISHED TRAINING MODEL", "="*20)
+
+# Generate new text
 context = torch.zeros((1,1), dtype=torch.long, device=device)
-print(decode(m.generate(context, max_new_tokens=10000)[0].tolist()))
+new_text = decode(m.generate(context, max_new_tokens=10000)[0].tolist())
+print(new_text)
