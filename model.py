@@ -140,7 +140,7 @@ class Block(nn.Module):
         return x
 
 
-class BigramLanguageModel(nn.Module):
+class gpt(nn.Module):
     def __init__(self):
         super().__init__()
         # each token directly reads off the logits for the next token from a lookup table
@@ -192,7 +192,7 @@ class BigramLanguageModel(nn.Module):
         return idx
 
 
-model = BigramLanguageModel()
+model = gpt()
 m = model.to(device)
 
 # Create a pytorch optimizer
